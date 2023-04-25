@@ -1,31 +1,32 @@
-const path = require('path');
-const express = require('express');
-const session = require('express-session');
-const exphbs = require('express-handlebars');
+const path = require("path");
+const express = require("express");
+const session = require("express-session");
+const exphbs = require("express-handlebars");
 // Initializes Sequelize with session store
-const SequelizeStore = require('connect-session-sequelize')(session.Store);
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
 
-const { strict } = require('assert');
-const routes = require('./controllers');
-const sequelize = require('./config/connection');
-const helpers = require('./utils/helpers');
+const { strict } = require("assert");
+const routes = require("./controllers");
+const sequelize = require("./config/connection");
+const helpers = require("./utils/helpers");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Sets up session and connect to our Sequelize db
 const sess = {
-  secret: 'Super secret secret',
+  secret: "Super secret secret",
   // TODO: Add a comment describing the purpose of adding a cookies object to our options to our session object
+  // to store session data persistently off the server
   cookie: {
     // TODO: Add a comment describing the functionality of the maxAge attribute
-    maxAge: 60 * 60 * 1000,
+    maxAge: 60 * 60 * 1000, // expires after 1 day
     // TODO: Add a comment describing the functionality of the httpOnly attribute
-    httpOnly: true,
+    httpOnly: true, // the session cannot be accessed by js client-side code
     // TODO: Add a comment describing the functionality of the secure attribute
-    secure: false,
+    secure: false, //only transmitting by HTTPS
     // TODO: Add a comment describing the functionality of the sameSite attribute
-    sameSite: 'strict',
+    sameSite: "strict", //
   },
   resave: false,
   saveUninitialized: true,
@@ -39,12 +40,12 @@ app.use(session(sess));
 
 const hbs = exphbs.create({ helpers });
 
-app.engine('handlebars', hbs.engine);
-app.set('view engine', 'handlebars');
+app.engine("handlebars", hbs.engine);
+app.set("view engine", "handlebars");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use(routes);
 
